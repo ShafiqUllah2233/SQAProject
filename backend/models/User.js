@@ -58,6 +58,8 @@ const UserSchema = new mongoose.Schema({
       country: String
     }
   },
+
+
   dietaryPreferences: [{
     type: String,
     enum: ['VEGETARIAN', 'VEGAN', 'GLUTEN_FREE', 'DAIRY_FREE', 'NUT_ALLERGY']
