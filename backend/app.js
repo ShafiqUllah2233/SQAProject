@@ -12,6 +12,7 @@ const reservationRoutes=require('./routes/reservationtableroutes');
 const tableRoutes=require('./routes/tableroutes');
 const paymentroutes=require('./routes/paymentroutes');
 const feedbackroutes=require('./routes/feedbackroutes');
+const profileRoutes=require('./routes/profileroute');
 
 const cors = require('cors');
 dotenv.config();
@@ -35,6 +36,7 @@ app.use('/api/reservation',reservationRoutes);
 app.use('/api/table',tableRoutes);
 app.use('/api/payment',paymentroutes);
 app.use('/api/feedback',feedbackroutes);
+app.use('/api/profile',profileRoutes);
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

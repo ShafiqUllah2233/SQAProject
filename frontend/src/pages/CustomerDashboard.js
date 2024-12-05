@@ -18,7 +18,6 @@ const CustomerDashboard = () => {
         navigate('/'); // Redirect to login if no token found
         return;
       }
-
       try {
         const response = await fetch('http://localhost:5000/api/Customers/me', {
           method: 'GET',

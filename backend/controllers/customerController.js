@@ -4,7 +4,6 @@ require('dotenv').config();
 
 const getUserInfo = async (req, res) => {
   const id= req.id;
-  console.log(id);
   try {
     const user = await User.findById(req.id); // Find user by ID from decoded token
     if (!user) {

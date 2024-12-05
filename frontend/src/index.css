@@ -167,10 +167,11 @@ h2 {
   font-size: 20px;
 }
 
+
+
 /* Main Content Styles */
 .dashboard-content {
-  background-color: white;
-  border-radius: 8px;
+  background-color: rgba(181, 181, 181, 0.73);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -178,4 +179,50 @@ h2 {
   font-size: 16px;
   color: #555;
   line-height: 1.6;
+}
+
+
+/*account section styles */
+
+.account-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.section {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background-color: #fff;
+}
+
+h2 {
+  margin-bottom: 1rem;
+}
+
+#addresses label{
+  display: flex;
+  flex-direction: column;
+  vertical-align: middle;
+  margin:8px 0 8px 0;
+}
+
+#preferences label
+{
+  display: flex;
+  flex-direction: column;
+  vertical-align: middle;
+  margin:8px 0 8px 0;
+
+
+}
+
+.account-sections button
+{
+  width:30%;
+  margin:5px;
 }
