@@ -1,10 +1,9 @@
 const Cart = require('../models/cart');
 const MenuItem = require('../models/menuitem');
-const Order = require('../models/Order');
 
 // Add item to the cart
 const addItemToCart = async (req, res) => {
-  const { itemId, quantity } = req.body;
+  const { itemId, quantity} = req.body;
   const customerId = req.id;  // assuming authentication middleware adds user info
 
   // Ensure quantity is provided and is a valid number

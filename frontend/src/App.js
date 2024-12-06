@@ -4,6 +4,7 @@ import LoginPage from "./pages/Login";
 import SignupPage from "./pages/Signup";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import AccountManagement from './pages/AccountManagement';
+import MenuBrowsing from './pages/menubrowsing';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/dashboard" element={<CustomerDashboard />} />
         <Route path="/account" element={<AccountManagement />} />
+        <Route path="/menu" element={<MenuBrowsing />} />
       </Routes>
     </Router>
   );

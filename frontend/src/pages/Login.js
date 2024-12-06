@@ -1,7 +1,6 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
-import axios from 'axios';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
@@ -15,13 +14,24 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log(email, password);
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-        email,
-        password,
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
-      localStorage.setItem('token', response.data.token); // Store the JWT token
-      navigate('/dashboard'); // Redirect to dashboard
+
+      if (!response.ok) {
+        throw new Error('Invalid credentials');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token',data.token); // Store the JWT token
+      navigate('/dashboard');
+      console.log(response); // Redirect to dashboard
     } catch (err) {
       setError('Invalid credentials');
     }

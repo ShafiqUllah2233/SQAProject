@@ -21,7 +21,7 @@ const OrderSchema = new mongoose.Schema({
   }],
   totalPrice: {
       type: Number,
-      required: true,
+      
       min: 0
   },
   status: {
@@ -35,12 +35,12 @@ const OrderSchema = new mongoose.Schema({
   orderType: {
       type: String,
       enum: ['DINE_IN', 'TAKEAWAY', 'DELIVERY'],
-      required: true
+     
   },
   paymentMethod: {
       type: String,
       enum: ['CREDIT_CARD', 'PAYPAL', 'CASH', 'MOBILE_PAYMENT'],
-      required: true
+      
   },
   paymentStatus: {
       type: String,

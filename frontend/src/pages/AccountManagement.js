@@ -202,7 +202,7 @@ const AccountManagement = () => {
   const handleSavePreferences = async (updatedPreferences) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/Customers/update', {
+      const response = await fetch('http://localhost:5000/api/profile/update', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

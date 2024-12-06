@@ -6,6 +6,6 @@ const router = express.Router();
 
 
 // Route to update an existing customer profile
-router.put('/:id', authMiddleware, updateCustomerProfile);
+router.put('/update', authMiddleware, updateCustomerProfile);
 
 module.exports = router;

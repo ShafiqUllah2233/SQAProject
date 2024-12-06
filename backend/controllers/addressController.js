@@ -5,7 +5,7 @@ const Address = require('../models/Address');
 // Add new delivery address
 const addDeliveryAddress = async (req, res) => {
   const { addressLine1, addressLine2, city, state, postalCode, country, isDefault } = req.body;
-  const userId = req.id;
+  const userId = req.id; // Middleware should ensure `req.id` is set
   try {
     const user = await User.findById(userId);
 
@@ -13,25 +13,25 @@ const addDeliveryAddress = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const newAddress = new Address({
-      userId,
-      addressLine1,
-      addressLine2,
-      city,
-      state,
-      postalCode,
-      country,
-      isDefault,
-    });
+    // Create a new address object dynamically with only provided fields
+    const addressData = { userId };
+    if (addressLine1) addressData.addressLine1 = addressLine1;
+    if (addressLine2) addressData.addressLine2 = addressLine2;
+    if (city) addressData.city = city;
+    if (state) addressData.state = state;
+    if (postalCode) addressData.postalCode = postalCode;
+    if (country) addressData.country = country;
+    if (isDefault !== undefined) addressData.isDefault = isDefault;
 
     // If this is the default address, set others as non-default
     if (isDefault) {
       await Address.updateMany(
-        { userId: userId, _id: { $ne: newAddress._id } },
+        { userId, _id: { $ne: addressData._id } },
         { $set: { isDefault: false } }
       );
     }
 
+    const newAddress = new Address(addressData);
     await newAddress.save();
 
     res.json({ message: 'Delivery address added successfully', address: newAddress });
@@ -40,6 +40,7 @@ const addDeliveryAddress = async (req, res) => {
     res.status(500).json({ message: 'Error adding delivery address' });
   }
 };
+
 
 // Get all delivery addresses for the user
 const getDeliveryAddresses = async (req, res) => {

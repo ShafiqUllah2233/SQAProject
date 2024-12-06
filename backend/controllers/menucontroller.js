@@ -11,6 +11,8 @@ const getAllMenuItems = async (req, res) => {
   }
 };
 
+
+
 // Get menu items by category
 const getMenuItemsByCategory = async (req, res) => {
   const { category } = req.params;

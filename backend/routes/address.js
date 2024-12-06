@@ -13,7 +13,7 @@ const {
 // Route to get customer info
 router.post('/add', authMiddleware, addDeliveryAddress);
 router.get('/get', authMiddleware, getDeliveryAddresses);
-router.put('/update/:addressId', authMiddleware, updateAddress);
+router.put('/edit/:addressId', authMiddleware, updateAddress);
 router.delete('/delete/:addressId', authMiddleware, deleteAddress);
 
 module.exports = router;
