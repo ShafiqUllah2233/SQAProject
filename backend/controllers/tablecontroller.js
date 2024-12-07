@@ -82,24 +82,18 @@ const deleteTable = async (req, res) => {
 
 // Get available tables (as already implemented earlier)
 const getAvailableTables = async (req, res) => {
-  const { date, time, partySize } = req.query;
-
   try {
-    // Convert date and time into a proper Date object
-    const reservationTime = new Date(`${date} ${time}`);
-
-    // Find available tables that are not reserved at the given time and have the required capacity
+    // Query for tables with 'AVAILABLE' status
     const availableTables = await Table.find({
       status: 'AVAILABLE',
-      capacity: { $gte: partySize },
-      reservationTime: { $ne: reservationTime }  // Ensure that the table is not reserved at the given time
     });
 
     // If no available tables are found, return a message
     if (availableTables.length === 0) {
-      return res.status(404).json({ message: 'No tables available for the selected time and date' });
+      return res.status(404).json({ message: 'No tables available' });
     }
 
+    // Return the available tables
     res.status(200).json({ availableTables });
   } catch (error) {
     console.error(error);

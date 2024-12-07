@@ -1,27 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';  // Import the useNavigate hook
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Menuitem from '../components/menuitem';
 import Button from '../components/Button';
+import FilterDropdown from '../components/MenuFilter';  // Import the filter component
 import '../index.css';
+import { MoonLoader } from 'react-spinners';
 
 const MenuBrowsing = () => {
   const navigate = useNavigate();
-  const [menuItems, setMenuItems] = useState([]); // Store the menu items array
-  const [modalMessage, setModalMessage] = useState(''); // Store success or error message
-  const [modalVisible, setModalVisible] = useState(false); // Control modal visibility
-  
+  const [menuItems, setMenuItems] = useState([]);
+  const [filterParams, setFilterParams] = useState({});  // Store filter parameters
+  const [showMessage, setShowMessage] = useState(false);  // State to control the visibility of the "Item added" message
+  const [loading, setLoading] = useState(true);  // Loading state to manage data fetching
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/'); // Redirect to login if no token
+      navigate('/'); 
       return;
     }
 
-    const fetchmenudata = async () => {
+    const fetchMenuData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/menu/', {
+        let url = 'http://localhost:5000/api/menu/';
+        
+        // Append filter parameters to the URL if they exist
+        const queryParams = new URLSearchParams(filterParams).toString();
+        if (queryParams) {
+          url += `filter/?${queryParams}`;
+        }
+
+        const response = await fetch(url, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -34,24 +45,25 @@ const MenuBrowsing = () => {
         }
 
         const data = await response.json();
-        setMenuItems(data); // Set the menu items array in state
+        setMenuItems(data);
+        setLoading(false);  // Set loading to false once the data is fetched
         
       } catch (err) {
         console.log(err);
+        setLoading(false);  // In case of an error, stop the loading state
       }
     };
 
-    fetchmenudata();
-  }, [navigate]); 
+    fetchMenuData();
+  }, [navigate, filterParams]);  // Re-fetch data when filterParams change
 
-  // Handle order button click
   const handleOrder = async (itemId, quantity = 1) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/'); // Redirect to login if no token
+      navigate('/'); 
       return;
     }
-  
+
     try {
       const response = await fetch('http://localhost:5000/api/cart/add-to-cart', {
         method: 'POST',
@@ -64,50 +76,28 @@ const MenuBrowsing = () => {
           quantity,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to add item to cart');
       }
-  
-      const cartData = await response.json();
-  
-      // Add the item to the order schema in the database
-      const createOrderResponse = await fetch('http://localhost:5000/api/order/create', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: [{ menuItem: itemId, quantity }], // Pass the item and quantity
-          totalPrice: cartData.totalPrice,  // Assuming the response contains totalPrice
-        }),
-      });
-  
-      if (!createOrderResponse.ok) {
-        throw new Error('Failed to create order');
-      }
-  
-      // Show success message
-      setModalMessage('Item added to cart and order created successfully!');
-      setModalVisible(true);
-  
-      // Hide modal after 3 seconds
-      setTimeout(() => {
-        setModalVisible(false);
-      }, 3000);
-  
+      
+      // Show the "Item added" message
+      setShowMessage(true);
+      // Hide the message after 3 seconds
+      setTimeout(() => setShowMessage(false), 3000);
     } catch (err) {
       console.log(err);
-      setModalMessage('Please try again');
-      setModalVisible(true);
-  
-      // Hide modal after 3 seconds
-      setTimeout(() => {
-        setModalVisible(false);
-      }, 3000);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="loading-overlay">
+        <div className="loading-text">  <MoonLoader color="#36d7b7" loading={loading} size={100} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="account-management">
@@ -115,9 +105,13 @@ const MenuBrowsing = () => {
       <div className="dashboard-body">
         <Sidebar />
         <div className="dashboard-content">
+          {/* Filter Dropdown */}
+          <h1 style={{color:'white'}}>Browse Menu</h1>
+          <FilterDropdown setFilterParams={setFilterParams} />
+          
           <div className="Menugrid">
             {/* Map over the menuItems array and render each Menuitem */}
-            {menuItems.map((item, index) => (
+            {menuItems.length > 0 ? menuItems.map((item, index) => (
               <div key={index}>
                 <Menuitem 
                   name={item.name} 
@@ -130,22 +124,22 @@ const MenuBrowsing = () => {
                 <Button 
                   type="button" 
                   label="Order Now" 
-                  onClick={() => handleOrder(item._id)}  // Pass the itemId
+                  onClick={() => handleOrder(item._id)} 
                 />
               </div>
-            ))}
+            )) : (
+              <p>No menu items found based on the selected filters.</p>
+            )}
           </div>
-
-          {/* Modal for success or error message */}
-          {modalVisible && (
-            <div className="modal-overlay">
-              <div className="modal-content">
-                <p>{modalMessage}</p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Show "Item added to cart" message */}
+      {showMessage && (
+        <div className="added-to-cart-message">
+          <p>Item added to cart</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import ItemForm from '../components/ItemForm';
+import { MoonLoader } from 'react-spinners';
 import '../index.css';
 
 
@@ -230,7 +231,11 @@ const AccountManagement = () => {
   };
 
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className='loading-overlay'>
+   <div className='loading-text'> <MoonLoader color="#36d7b7" loading={loading} size={100} />
+   </div>
+    
+    </div>;
   if (error) return <div>{error}</div>;
 
   return (
@@ -239,6 +244,7 @@ const AccountManagement = () => {
       <div className="dashboard-body">
         <Sidebar />
         <div className="dashboard-content">
+          <h1>Account Management</h1>
           <div className="account-sections">
             {/* Account Preferences */}
             <div className="section" id="preferences">
@@ -257,11 +263,7 @@ const AccountManagement = () => {
                   <p>First Name: {customerInfo?.firstName}</p>
                   <p>Last Name: {customerInfo?.lastName}</p>
                   <p>Email: {customerInfo?.email}</p>
-                  <Button 
-                    type="button" 
-                    label="Edit Preferences" 
-                    onClick={() => setEditingPreferences(true)} 
-                  />
+                  <button style={{backgroundColor:'red'}}  onClick={() => setEditingPreferences(true)} >Edit Preferences</button>
                 </div>
               )}
             </div>

@@ -5,7 +5,11 @@ import SignupPage from "./pages/Signup";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import AccountManagement from './pages/AccountManagement';
 import MenuBrowsing from './pages/menubrowsing';
-
+import Orderhistory from "./pages/orderhistory";
+import Feedback from "./pages/feedbackpage"
+import Cart from "./pages/cart";
+import SpecialRequest from "./pages/specialrequest";
+import Reservations from "./pages/reservationpage";
 function App() {
   return (
     <Router>
@@ -15,6 +19,11 @@ function App() {
         <Route path="/dashboard" element={<CustomerDashboard />} />
         <Route path="/account" element={<AccountManagement />} />
         <Route path="/menu" element={<MenuBrowsing />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/Order-history" element={<Orderhistory/>}></Route>
+        <Route path="/feedback" element={<Feedback/>}></Route>
+        <Route path="/SpecialRequest" element={<SpecialRequest/>}></Route>
+        <Route path="/reservation" element={<Reservations/>}></Route>
       </Routes>
     </Router>
   );

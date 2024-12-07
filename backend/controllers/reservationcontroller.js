@@ -5,7 +5,6 @@ const Reservation = require('../models/reservation');
 const reserveTable = async (req, res) => {
   const { tableid, date, time, partySize, specialRequests } = req.body;
   const customerId = req.id;  // assuming user info is in the request after authentication
-
   try {
     // Find the table by ID
     const table = await Table.findById(tableid);

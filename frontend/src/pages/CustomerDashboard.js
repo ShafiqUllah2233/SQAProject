@@ -1,9 +1,8 @@
-// src/pages/CustomerDashboard.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-
+import { MoonLoader } from 'react-spinners';
 
 const CustomerDashboard = () => {
   const [customerInfo, setCustomerInfo] = useState(null);
@@ -33,7 +32,6 @@ const CustomerDashboard = () => {
 
         const data = await response.json();
         setCustomerInfo(data);
-        console.log(data);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch customer info');
@@ -44,18 +42,28 @@ const CustomerDashboard = () => {
     fetchCustomerInfo();
   }, [navigate]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) {
+    return (
+      <div className="loading-overlay">
+        <div className="loading-text"> <MoonLoader color="#36d7b7" loading={loading} size={100} />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="dashboard">
-      <Header customerInfo={customerInfo} />
+      <Header />
       <div className="dashboard-body">
         <Sidebar />
         <div className="dashboard-content">
           <h2>Welcome to Your Dashboard</h2>
-          <p> <strong>Customer Name: </strong> {customerInfo.firstName} {customerInfo.lastName}</p>
-          <p><strong>Email: </strong>  {customerInfo.email}</p>
+          <p><strong>Customer Name: </strong> {customerInfo.firstName} {customerInfo.lastName}</p>
+          <p><strong>Email: </strong> {customerInfo.email}</p>
         </div>
       </div>
     </div>

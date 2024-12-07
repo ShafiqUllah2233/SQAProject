@@ -62,8 +62,159 @@ const addItemToCart = async (req, res) => {
   }
 };
 
+const getItemsfromcart = async (req, res) => {
+  const customerId = req.id; // Assuming authentication middleware adds user info
 
+  try {
+    // Find the cart and populate item details
+    const cart = await Cart.findOne({ customerId }).populate('items.itemId', 'name imageUrl description category price');
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
 
-module.exports = {
-  addItemToCart
+    // Check if the cart is empty
+    if (cart.items.length === 0) {
+      return res.json({ message: 'Your cart is empty', items: [], totalPrice: cart.totalPrice });
+    }
+
+    // Respond with populated cart data
+    res.json({
+      message: 'Cart retrieved successfully',
+      items: cart.items.map(item => ({
+        id: item.itemId._id,
+        name: item.itemId.name,
+        imageUrl: item.itemId.imageUrl,
+        description: item.itemId.description,
+        category: item.itemId.category,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+      totalPrice: cart.totalPrice,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching items from cart' });
+  }
 };
+
+const updateQuantity = async (req, res) => {
+  const { itemId, quantity } = req.body;
+  const customerId = req.id;  // Assuming authentication middleware adds user info
+
+  // Ensure quantity is provided and is a valid number
+  if (!quantity || quantity <= 0) {
+    return res.status(400).json({ message: 'Quantity must be a positive number' });
+  }
+
+  try {
+    // Find the cart for the customer
+    const cart = await Cart.findOne({ customerId });
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    // Find the item in the cart
+    const itemIndex = cart.items.findIndex(item => item.itemId.toString() === itemId);
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: 'Item not found in cart' });
+    }
+
+    // Update the quantity of the item
+    cart.items[itemIndex].quantity = quantity;
+
+    // Recalculate the total price of the cart
+    cart.totalPrice = cart.items.reduce((acc, item) => {
+      if (!item.price || isNaN(item.price) || !item.quantity || isNaN(item.quantity)) {
+        return acc; // Skip invalid price or quantity
+      }
+      return acc + item.price * item.quantity;
+    }, 0);
+
+    // Ensure totalPrice is a valid number
+    if (isNaN(cart.totalPrice)) {
+      cart.totalPrice = 0;
+    }
+
+    // Save the updated cart
+    await cart.save();
+
+    // Respond with the updated cart
+    res.json({
+      message: 'Quantity updated successfully',
+      items: cart.items.map(item => ({
+        id: item.itemId._id,
+        name: item.itemId.name,
+        imageUrl: item.itemId.imageUrl,
+        description: item.itemId.description,
+        category: item.itemId.category,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+      totalPrice: cart.totalPrice,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error updating quantity' });
+  }
+};
+
+
+const deleteCartItem = async (req, res) => {
+  const { itemId } = req.params;  // Get itemId from request parameters
+  const customerId = req.id;      // Assuming authentication middleware adds user info
+
+  try {
+    // Find the cart for the customer
+    const cart = await Cart.findOne({ customerId });
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    // Find the index of the item to be deleted in the cart
+    const itemIndex = cart.items.findIndex(item => item.itemId.toString() === itemId);
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: 'Item not found in cart' });
+    }
+
+    // Remove the item from the cart
+    cart.items.splice(itemIndex, 1);
+
+    // Recalculate the total price of the cart after deletion
+    cart.totalPrice = cart.items.reduce((acc, item) => {
+      if (!item.price || isNaN(item.price) || !item.quantity || isNaN(item.quantity)) {
+        return acc;  // Skip invalid price or quantity
+      }
+      return acc + item.price * item.quantity;
+    }, 0);
+
+    // Ensure totalPrice is a valid number
+    if (isNaN(cart.totalPrice)) {
+      cart.totalPrice = 0;
+    }
+
+    // Save the updated cart
+    await cart.save();
+
+    // Respond with the updated cart
+    res.json({
+      message: 'Item deleted successfully',
+      items: cart.items.map(item => ({
+        id: item.itemId._id,
+        name: item.itemId.name,
+        imageUrl: item.itemId.imageUrl,
+        description: item.itemId.description,
+        category: item.itemId.category,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+      totalPrice: cart.totalPrice,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting item from cart' });
+  }
+};
+
+
+module.exports = { addItemToCart, getItemsfromcart, updateQuantity, deleteCartItem };
+
