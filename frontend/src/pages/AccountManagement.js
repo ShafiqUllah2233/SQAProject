@@ -1,14 +1,19 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  User, 
+  MapPin, 
+  CreditCard, 
+  Edit, 
+  Trash2, 
+  Plus 
+} from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import ItemForm from '../components/ItemForm';
 import { MoonLoader } from 'react-spinners';
 import '../index.css';
-
-
 
 const AccountManagement = () => {
   const [customerInfo, setCustomerInfo] = useState(null);
@@ -23,19 +28,20 @@ const AccountManagement = () => {
   const [editingPreferences, setEditingPreferences] = useState(false);
   const navigate = useNavigate();
 
-    // Account preferences fields configuration
-    const preferencesFields = [
-      { name: 'firstName', label: 'First Name' },
-      { name: 'lastName', label: 'Last Name' },
-      { name: 'email', label: 'Email' }
-    ];
+  // Account preferences fields configuration
+  const preferencesFields = [
+    { name: 'firstName', label: 'First Name' },
+    { name: 'lastName', label: 'Last Name' },
+    { name: 'email', label: 'Email' }
+  ];
   
-    // Account preferences validation rules
-    const preferencesValidationRules = {
-      firstName: { required: true },
-      lastName: { required: true },
-      email: { required: true }
-    };
+  // Account preferences validation rules
+  const preferencesValidationRules = {
+    firstName: { required: true },
+    lastName: { required: true },
+    email: { required: true }
+  };
+
   // Address fields configuration
   const addressFields = [
     { name: 'addressLine1', label: 'Address Line 1' },
@@ -230,12 +236,14 @@ const AccountManagement = () => {
     }
   };
 
-
-  if (loading) return <div className='loading-overlay'>
-   <div className='loading-text'> <MoonLoader color="#36d7b7" loading={loading} size={100} />
-   </div>
-    
-    </div>;
+  if (loading) return (
+    <div className='loading-overlay'>
+      <div className='loading-text'>
+        <MoonLoader color="#36d7b7" loading={loading} size={100} />
+      </div>
+    </div>
+  );
+  
   if (error) return <div>{error}</div>;
 
   return (
@@ -248,7 +256,10 @@ const AccountManagement = () => {
           <div className="account-sections">
             {/* Account Preferences */}
             <div className="section" id="preferences">
-              <h2>Account Preferences</h2>
+              <h2>
+                <User className="inline-icon mr-2" /> 
+                Account Preferences
+              </h2>
               
               {editingPreferences ? (
                 <ItemForm
@@ -263,31 +274,43 @@ const AccountManagement = () => {
                   <p>First Name: {customerInfo?.firstName}</p>
                   <p>Last Name: {customerInfo?.lastName}</p>
                   <p>Email: {customerInfo?.email}</p>
-                  <button style={{backgroundColor:'red'}}  onClick={() => setEditingPreferences(true)} >Edit Preferences</button>
+                  <button 
+                    className='accountmgmtbutton flex items-center' 
+                    onClick={() => setEditingPreferences(true)}
+                  >
+                    <Edit className="mr-2" /> Edit Preferences
+                  </button>
                 </div>
               )}
             </div>
 
             {/* Address Management */}
             <div className="section" id="addresses">
-              <h2>Address Management</h2>
+              <h2>
+                <MapPin className="inline-icon mr-2" /> 
+                Address Management
+              </h2>
               <ul>
                 {addresses.map((address, index) => (
-                  <li key={index}>
-                    {address.addressLine1}, {address.city}, {address.state}, {address.country}
-                    <Button 
-                      type="button" 
-                      label="Edit" 
-                      onClick={() => {
-                        setEditingAddress(address);
-                        setAddingNewAddress(true);
-                      }} 
-                    />
-                    <Button 
-                      type="button" 
-                      label="Delete" 
-                      onClick={() => handleDeleteAddress(address)} 
-                    />
+                  <li key={index} className="flex items-center justify-between">
+                    <span>
+                      {address.addressLine1}, {address.city}, {address.state}, {address.country}
+                    </span>
+                    <div className="flex space-x-2">
+                      <Button 
+                        type="button" 
+                        label={<><Edit className="mr-1" /> Edit</>} 
+                        onClick={() => {
+                          setEditingAddress(address);
+                          setAddingNewAddress(true);
+                        }} 
+                      />
+                      <Button 
+                        type="button" 
+                        label={<><Trash2 className="mr-1" /> Delete</>} 
+                        onClick={() => handleDeleteAddress(address)} 
+                      />
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -305,7 +328,12 @@ const AccountManagement = () => {
               {!addingNewAddress && (
                 <Button 
                   type="button" 
-                  label="Add New Address" 
+                  label={
+                    <>
+                      <Plus className="mr-1" /> 
+                      Add New Address
+                    </>
+                  }
                   onClick={() => {
                     setAddingNewAddress(true);
                     setEditingAddress(null);
@@ -316,24 +344,31 @@ const AccountManagement = () => {
 
             {/* Payment Methods */}
             <div className="section" id="payments">
-              <h2>Payment Methods</h2>
+              <h2>
+                <CreditCard className="inline-icon mr-2" /> 
+                Payment Methods
+              </h2>
               <ul>
                 {paymentMethods.map((method, index) => (
-                  <li key={index}>
-                    {method.cardNumber} - {method.cardHolderName}
-                    <Button 
-                      type="button" 
-                      label="Edit" 
-                      onClick={() => {
-                        setEditingPaymentMethod(method);
-                        setAddingNewPaymentMethod(true);
-                      }} 
-                    />
-                    <Button 
-                      type="button" 
-                      label="Delete" 
-                      onClick={() => handleDeletePaymentMethod(method)} 
-                    />
+                  <li key={index} className="flex items-center justify-between">
+                    <span>
+                      {method.cardNumber} - {method.cardHolderName}
+                    </span>
+                    <div className="flex space-x-2">
+                      <Button 
+                        type="button" 
+                        label={<><Edit className="mr-1" /> Edit</>} 
+                        onClick={() => {
+                          setEditingPaymentMethod(method);
+                          setAddingNewPaymentMethod(true);
+                        }} 
+                      />
+                      <Button 
+                        type="button" 
+                        label={<><Trash2 className="mr-1" /> Delete</>} 
+                        onClick={() => handleDeletePaymentMethod(method)} 
+                      />
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -351,7 +386,12 @@ const AccountManagement = () => {
               {!addingNewPaymentMethod && (
                 <Button 
                   type="button" 
-                  label="Add New Payment Method" 
+                  label={
+                    <>
+                      <Plus className="mr-1" /> 
+                      Add New Payment Method
+                    </>
+                  }
                   onClick={() => {
                     setAddingNewPaymentMethod(true);
                     setEditingPaymentMethod(null);

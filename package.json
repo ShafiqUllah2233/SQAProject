@@ -4,7 +4,10 @@
   },
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "client": "cd frontend && npm start", 
-    "server": "cd backend && npm start"    
+    "client": "cd frontend && npm start",
+    "server": "cd backend && npm start"
+  },
+  "dependencies": {
+    "jwt-decode": "^4.0.0"
   }
 }

@@ -4,7 +4,6 @@ import { MoonLoader } from "react-spinners";
 const Reservation = (props) => {
   const navigate = useNavigate();
   const [availableTables, setAvailableTables] = useState([]); // State to store available tables
-  const [error, setError] = useState(null); // State to store errors if any
   const [selectedTable, setSelectedTable] = useState(null); // State to store selected table
   const [partySize, setPartySize] = useState(1); // Party size default to 1
   const [specialRequests, setSpecialRequests] = useState(""); // Special requests
@@ -24,7 +23,6 @@ const Reservation = (props) => {
         const data = await response.json();
         setAvailableTables(data.availableTables); // Assuming response structure contains availableTables
       } catch (error) {
-        setError(error.message); // Set error if the fetch fails
       } finally {
         setLoading(false); // Set loading to false after fetching is done
       }
@@ -44,7 +42,6 @@ const Reservation = (props) => {
     e.preventDefault();
 
     if (partySize > selectedTable.capacity) {
-      setError(`Party size should be less than or equal to the table's capacity of ${selectedTable.capacity}`);
       return;
     }
 
@@ -60,7 +57,7 @@ const Reservation = (props) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("You are not authorized to make this request.");
+        navigate('/');
         return;
       }
 
@@ -73,15 +70,12 @@ const Reservation = (props) => {
         body: JSON.stringify(reservationData),
       });
 
-      const data = await response.json();
       if (response.ok) {
         setReservationConfirmed(true);
         navigate("/dashboard"); // Example of navigation after reservation
       } else {
-        setError(data.message); // Display error if the reservation fails
       }
     } catch (error) {
-      setError("Failed to make reservation. Please try again.");
     } finally {
       setReserving(false); // Set reserving to false after the reservation process is completed
     }
@@ -89,13 +83,12 @@ const Reservation = (props) => {
 
   return (
     <div className="tableflex">
-      {error && <p style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>Error: {error}</p>}
 
       {/* Show Loading message while fetching tables */}
       {loading && (
         <div className="loading-overlay">
           <div className="loading-text">
-            <div>              <MoonLoader color="#36d7b7" loading={loading} size={100} />
+            <div> <MoonLoader color="#36d7b7" loading={loading} size={100} />
             </div>
           </div>
         </div>
@@ -176,7 +169,7 @@ const Reservation = (props) => {
           </div>
         ))
       ) : (
-        !loading && <p style={{ fontSize: "18px", textAlign: "center", color: "#34495e" }}>No available tables at the moment</p>
+        !loading && <p className="error-message">No available tables at the moment</p>
       )}
     </div>
   );

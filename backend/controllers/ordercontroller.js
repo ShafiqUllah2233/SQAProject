@@ -131,8 +131,38 @@ const cancelOrder = async (req, res) => {
   }
 };
 
+const Specialrequest= async (req,res)=>{
+  const userId=req.id;
+  const {orderId,specialRequest}=req.body;
 
+  if (!orderId || !specialRequest) {
+    return res.status(400).json({ message: "Order ID and Special Request are required." });
+  }
+
+
+  try {
+    
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found." });
+    }
+
+    if (order.customer.toString() !== userId) {
+      return res.status(403).json({ error: 'You are not authorized to cancel this order' });
+    }
+    // Add the special request to the order
+    order.specialRequests = specialRequest;
+    await order.save();
+
+    res.status(200).json({ message: "Special Request added successfully.", order });
+  } catch (error) {
+    console.error("Error saving special request:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+
+
+};
 
 module.exports = {
-  getOrderHistory,createOrder,cancelOrder
+  getOrderHistory,createOrder,cancelOrder,Specialrequest
 };

@@ -68,7 +68,7 @@ const ItemForm = ({
       
       {fields.map((field) => (
         <div key={field.name}>
-          <label>
+          <label className="accmgmtpayment">
             {field.label}:
             <input
               type={field.type || 'text'}

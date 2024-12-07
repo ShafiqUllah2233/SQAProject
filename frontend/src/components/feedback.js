@@ -7,7 +7,7 @@ const Feedbackitem = ({ orders }) => {
   const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
   const [formError, setFormError] = useState(''); // Track form validation errors
   const [isLoading, setIsLoading] = useState(false); // Track loading state
-
+  const [message,setMessage]=useState("");
   // Check feedback existence for all orders
   useEffect(() => {
     const checkFeedback = async () => {
@@ -33,9 +33,12 @@ const Feedbackitem = ({ orders }) => {
         setIsLoading(false); // Set loading state to false once fetching is done
       }
     };
-
     if (orders.length) {
       checkFeedback();
+    }
+    else
+    {
+      setMessage("You have No delivered Orders yet");
     }
   }, [orders]);
 
@@ -129,7 +132,8 @@ const Feedbackitem = ({ orders }) => {
     <div className='loading-text'>   <MoonLoader color="#36d7b7" loading={isLoading} size={100} />
        </div> 
         </div>}
-
+        {message && <p className='centered-message'>{message}</p>}
+    
       {orders.map((order) => (
         <div key={order._id} className="order-item">
           <h2>Order ID: {order._id}</h2>
@@ -195,6 +199,7 @@ const Feedbackitem = ({ orders }) => {
           )}
         </div>
       ))}
+      
     </div>
   );
 };

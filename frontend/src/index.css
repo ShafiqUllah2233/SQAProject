@@ -1,5 +1,151 @@
 /* Global styles */
-/* Loading animation styles */
+.greeting {
+  font-size: 18px;
+  font-weight: bold;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
+/* CSS for flashing effect */
+@keyframes flash {
+  0% {
+    opacity: 1;
+    color: #FF5722; /* Original color */
+  }
+  50% {
+    opacity: 0.5;
+    color: #FFC107; /* Flashes to a different color */
+  }
+  100% {
+    opacity: 1;
+    color: #FF5722; /* Back to original color */
+  }
+}
+
+.flash-logo {
+  animation: flash 1s infinite;
+}
+
+/* General Container Styles */
+.Container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #202020; /* Light background color */
+  margin: 0;
+}
+
+/* Authentication Container */
+.auth-container {
+  background: #ffffff; /* White background */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  width: 100%;
+  max-width: 400px; /* Limit maximum width */
+  text-align: center;
+}
+
+/* Title Styling */
+.auth-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333333; /* Dark text color */
+}
+
+/* Error Message Styling */
+.error {
+  color: #ff4d4d; /* Red color for errors */
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Form Styles */
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Input Field Styles */
+.auth-container input[type="email"],
+.auth-container input[type="password"] {
+  padding: 10px;
+  width:90%;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Button Styling */
+.auth-container button {
+  padding: 12px;
+  background-color: #4caf50; /* Green background */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  width:150px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.auth-container button:hover {
+  background-color: #45a049; /* Slightly darker green on hover */
+}
+
+/* Footer Link Styling */
+.auth-footer {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.auth-footer a {
+  color: #007bff; /* Blue link color */
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.auth-footer a:hover {
+  color: #0056b3; /* Darker blue on hover */
+}
+
+.centered-message {
+  position: fixed; /* Fixed position to overlay on the entire screen */
+  top: 50%; /* Vertical center */
+  left: 50%; /* Horizontal center */
+  transform: translate(-50%, -50%); /* Adjust for exact center */
+  background-color: rgba(0, 0, 0, 0.7); /* Optional: semi-transparent background */
+  color: white; /* White text color */
+  padding: 20px;
+  width:500px;
+  border-radius: 5px; /* Optional: rounded corners */
+  font-size: 1.5rem;
+  text-align: center; /* Center the text */
+  z-index: 9999; /* Ensure it's on top of other elements */
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -143,7 +289,7 @@ body {
 
 .sidebar ul li a {
   text-decoration: none;
-  color: #ff4757;
+  color: #f5f5f5;
   font-size: 18px;
   display: flex;
   align-items: center;
@@ -196,6 +342,8 @@ h1
 
 /*account section styles */
 
+
+
 .account-sections {
   display: flex;
   flex-direction: column;
@@ -233,12 +381,35 @@ h2 {
 
 }
 
+
+
 .account-sections button
 {
-  width:30%;
+  width:fit-content;
   margin:5px;
+  padding:10px;
+  border-radius: 9px;
+  border:none;
+  background-color: #e74c3c;
+  cursor: pointer;
+  color:white;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out; /* Smooth transition for all properties */
+
 }
 
+
+.account-sections button:hover
+{
+  background-color: #b0302d;
+   /* Slightly fade the button on hover */
+  transform: scale(1.05);
+}
+.accmgmtpayment
+{
+  display: flex;
+  flex-direction: column; gap:10px;
+}
 
 
 /*menu styles*/
@@ -733,5 +904,53 @@ h2 {
 }
 .forminputtable input
 {
+  width:300px;
+  height:40px;
+  border-radius: 10px;
+  border:0.1px solid gray;
+  cursor:pointer;
+}
+
+.special-request-form
+{
+  display: flex;
+  flex-direction: column;
+}
+.special-request-form input
+{
   width:250px;
+  height:30px;
+  margin-bottom:10px;
+  padding-left: 5px;
+  border:0.1px solid gray;
+  border-radius: 5px;
+}
+
+.error-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.905); /* Red background with opacity */
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 80%;
+  word-wrap: break-word;
+  z-index: 9999; /* Ensure the message is on top */
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* Optional fade-in animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
