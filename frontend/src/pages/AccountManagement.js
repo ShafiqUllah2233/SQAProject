@@ -434,7 +434,7 @@ const AccountManagement = () => {
             {/* Account Preferences */}
             <div className="section" id="preferences">
               <h2>
-                <User className="inline-icon mr-2" /> 
+                <User className="" /> 
                 Account Preferences
               </h2>
               
@@ -471,7 +471,7 @@ const AccountManagement = () => {
                 {addresses.map((address) => (
                   <li 
                     key={address._id} 
-                    className="flex items-center justify-between mb-2 p-2 border rounded"
+                    className=""
                   >
                     <span>
                       {address.addressLine1}

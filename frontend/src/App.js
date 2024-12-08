@@ -10,6 +10,9 @@ import Feedback from "./pages/feedbackpage"
 import Cart from "./pages/cart";
 import SpecialRequest from "./pages/specialrequest";
 import Reservations from "./pages/reservationpage";
+import Checkout from "./pages/checkout";
+import Invoice from "./pages/invoice";
+
 function App() {
   return (
     <Router>
@@ -24,6 +27,8 @@ function App() {
         <Route path="/feedback" element={<Feedback/>}></Route>
         <Route path="/SpecialRequest" element={<SpecialRequest/>}></Route>
         <Route path="/reservation" element={<Reservations/>}></Route>
+        <Route path="/checkout" element={<Checkout/>}></Route>
+        <Route path="/invoice" element={<Invoice/>}></Route>
       </Routes>
     </Router>
   );

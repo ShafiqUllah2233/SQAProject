@@ -943,7 +943,10 @@ h2 {
   margin-bottom:10px;
   /* Break long words to prevent overflow */
 }
-
+.order-item
+{
+  padding-left: 10px;
+}
 .order-item:hover,.tableitem:hover
 {
   transform: translateY(-5px);
@@ -1004,6 +1007,19 @@ h2 {
   width: 90%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
+.success-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #2ecc71;
+  color: white;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  z-index: 9999;
+}
+
 
 .success-modal p {
   margin: 0;
@@ -1128,3 +1144,118 @@ h2 {
     opacity: 1;
   }
 }
+
+
+/* Additional Checkout Styles */
+.checkout-section {
+  background-color: #ffffffb8;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-section h2 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.address-list, .payment-methods, .pending-orders-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.address-item, .payment-method {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #ffffffb8;
+  width: calc(33.333% - 15px);
+  box-sizing: border-box;
+}
+
+.address-item:hover, .payment-method:hover {
+  border-color: #4a90e2;
+}
+
+.address-item.selected, .payment-method.selected {
+  border-color: #4a90e2;
+  background-color: #f0f6ff;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.2);
+}
+
+.pending-order-item {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.checkout-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.proceed-button {
+  width: fit-content;
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  border: none; /* Remove border */
+  padding: 10px 20px; /* Add padding */
+  font-size: 16px; /* Font size */
+  cursor: pointer; /* Cursor pointer for hover */
+  border-radius: 5px; /* Rounded corners */
+  transition: background-color 0.3s, transform 0.3s; /* Smooth transition for hover effects */
+  margin-left:1rem;
+  margin-bottom: 10px;
+}
+
+.proceed-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+.proceed-button:disabled:hover {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.proceed-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.05); 
+}
+
+.error-message {
+  color: red;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.invoice-item
+{
+  display: flex;
+  flex-direction: column;
+  border: 0.1px solid #ddd;
+  border-radius: 20px;
+  background-color: #ffffffb8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  white-space: normal; /* Allow paragraph text to wrap */
+  overflow-wrap: break-word;
+  transition: transform 0.5s, box-shadow 0.5s;
+  overflow:hidden;
+  margin-bottom:10px;
+  padding:10px;
+  /* Break long words to prevent overflow */
+}
+.invoice-item:hover
+{
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border:1px solid gray;
+}
+

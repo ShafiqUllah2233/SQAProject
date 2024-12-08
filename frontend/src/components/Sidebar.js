@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 // Import necessary icons
-import { FaHome, FaUserCircle, FaUtensils, FaHistory, FaCalendarAlt, FaShoppingCart, FaStar, FaRegQuestionCircle } from 'react-icons/fa';
+import { FaHome, FaUserCircle, FaUtensils, FaHistory, FaCalendarAlt, FaShoppingCart, FaStar, FaRegQuestionCircle,FaMoneyBillWave } from 'react-icons/fa';
 
 const Sidebar = () => {
   return (
@@ -46,6 +46,16 @@ const Sidebar = () => {
         <li>
           <Link to="/SpecialRequest">
             <FaRegQuestionCircle className="icon" /> Special Requests
+          </Link>
+        </li>
+        <li>
+          <Link to="/checkout">
+            <FaMoneyBillWave className="icon" /> Checkout
+          </Link>
+        </li>
+        <li>
+          <Link to="/invoice">
+            <FaMoneyBillWave className="icon" /> Invoices
           </Link>
         </li>
       </ul>

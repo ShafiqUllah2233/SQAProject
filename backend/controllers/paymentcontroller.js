@@ -1,84 +1,67 @@
-// src/controllers/paymentController.js
-const Payment = require('../models/payment');
-const Invoice = require('../models/invoice');
-const Cart = require('../models/cart');
+const Payment = require('../models/payment'); // Payment model
+const Order = require('../models/Order'); // Order model
 
-// Simulate Payment Processing
 const processPayment = async (req, res) => {
-  const { paymentMethod } = req.body;
-  const userId = req.id;  // Get userId from authenticated user
-  
-  try {
-    // Fetch cart items for the user
-    const cart = await Cart.findOne({ customerId: userId });
+  const { orderId, addressId, paymentMethod, amount } = req.body;
+  const userId = req.id; // Assuming the user ID is provided in the request body
 
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: 'Cart is empty. Cannot proceed with payment.' });
+  try {
+    // Validate input
+    if (!orderId || !addressId || !paymentMethod || !amount) {
+      return res.status(400).json({ error: 'All fields are required' });
     }
 
-    // Calculate total amount from cart items
-    let totalAmount = 0;
-    cart.items.forEach(item => {
-      totalAmount += item.price * item.quantity;
-    });
+    // Find the order
+    const order = await Order.findOne({ _id: orderId, customer: userId });
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
 
-    // Create the invoice
-    const invoice = new Invoice({
-      userId,
-      amount: totalAmount,
-      items: cart.items.map(item => ({
-        menuItem: item.itemId,
-        quantity: item.quantity,
-      })),
-    });
+    // Verify that the passed amount matches the order's total price
+    if (order.totalPrice !== amount) {
+      return res.status(400).json({ error: 'Order amount mismatch' });
+    }
 
-    await invoice.save();
+    // Check if already paid
+    if (order.paymentStatus === 'PAID') {
+      return res.status(400).json({ error: 'Order is already paid' });
+    }
 
-    // Simulate successful payment (dummy transaction ID)
-    const transactionId = `txn_${Date.now()}`;
+    // Simulate payment success (can be replaced with external payment gateway logic)
+    order.paymentStatus = 'PAID';
+    await order.save();
+
+    // Log payment in Payment model
     const payment = new Payment({
-      userId,
-      amount: totalAmount,
+      orderId: order._id,
+      customer: userId,
       paymentMethod,
-      paymentStatus: 'Completed',
-      transactionId,
-      invoiceId: invoice._id,
+      amount: order.totalPrice,
+      status: 'SUCCESS',
     });
-
     await payment.save();
 
-    // Update invoice status to 'Paid'
-    invoice.paymentStatus = 'Paid';
-    await invoice.save();
-
-    // Respond with success
-    res.status(200).json({ message: 'Payment processed successfully', payment });
+    res.status(200).json({ message: 'Payment successful', order });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error processing payment' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-// Get past invoices
-const getPastInvoices = async (req, res) => {
-  const userId = req.id;  // Get userId from authenticated user
+// Get payments for a specific user
+const getpayments = async (req, res) => {
+  const userId = req.id; // Get user ID from the request (assumed to be added as part of authorization)
 
   try {
-    const invoices = await Invoice.find({ userId })
-      .populate('items.menuItem', 'name price description'); // Populate MenuItem details
-
-    if (invoices.length === 0) {
-      return res.status(404).json({ message: 'No invoices found for this user' });
-    }
-
-    res.status(200).json({ invoices });
+    // Find all payments made by the user
+    const payments = await Payment.find({ customer: userId });
+    
+    // Respond with the list of payments
+    res.json(payments);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching invoices' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-module.exports = {
-  processPayment,
-  getPastInvoices
-};
+module.exports = { processPayment, getpayments };
