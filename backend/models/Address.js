@@ -11,7 +11,7 @@ const AddressSchema = new mongoose.Schema({
   addressLine2: { type: String },
   city: { type: String, required: true },
   state: { type: String },
-  postalCode: { type: String, required: true },
+  postalCode: { type: String},
   country: { type: String, required: true },
   isDefault: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }

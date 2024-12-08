@@ -39,15 +39,17 @@ const AccountManagement = () => {
   const preferencesValidationRules = {
     firstName: { required: true },
     lastName: { required: true },
-    email: { required: true }
+    email: { required: true, email: true }
   };
 
   // Address fields configuration
   const addressFields = [
     { name: 'addressLine1', label: 'Address Line 1' },
+    { name: 'addressLine2', label: 'Address Line 2', required: false },
     { name: 'city', label: 'City' },
     { name: 'state', label: 'State' },
-    { name: 'country', label: 'Country' }
+    { name: 'country', label: 'Country' },
+    { name: 'isDefault', label: 'Set as Default', type: 'checkbox' }
   ];
 
   // Address validation rules
@@ -60,13 +62,24 @@ const AccountManagement = () => {
 
   // Payment method fields configuration
   const paymentMethodFields = [
+    { name: 'cardType', label: 'Card Type', type: 'select', 
+      options: ['Visa', 'MasterCard', 'American Express', 'Discover'] },
     { name: 'cardNumber', label: 'Card Number' },
-    { name: 'cardHolderName', label: 'Cardholder Name' }
+    { name: 'expiryDate', label: 'Expiry Date', type: 'date' },
+    { name: 'cardHolderName', label: 'Cardholder Name' },
+    { name: 'isDefault', label: 'Set as Default', type: 'checkbox' }
   ];
 
   // Payment method validation rules
   const paymentMethodValidationRules = {
-    cardNumber: { required: true, minLength: 16 },
+    cardType: { required: true },
+    cardNumber: { 
+      required: true, 
+      minLength: 16, 
+      maxLength: 16, 
+      pattern: /^\d{16}$/ 
+    },
+    expiryDate: { required: true },
     cardHolderName: { required: true }
   };
 
@@ -154,58 +167,219 @@ const AccountManagement = () => {
   }, [navigate]);
 
   // Handle address save
-  const handleSaveAddress = (newAddress) => {
-    if (editingAddress) {
-      // Update existing address
-      setAddresses((prevAddresses) => 
-        prevAddresses.map((address) => 
-          address.id === editingAddress.id ? { ...address, ...newAddress } : address
-        )
-      );
+  const handleSaveAddress = async (newAddress) => {
+    const token = localStorage.getItem('token');
+    try {
+      let response;
+      if (editingAddress) {
+        // Update existing address
+        response = await fetch(`http://localhost:5000/api/address/edit/${editingAddress._id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            addressLine1: newAddress.addressLine1,
+            addressLine2: newAddress.addressLine2 || '',
+            city: newAddress.city,
+            state: newAddress.state,
+            country: newAddress.country,
+            isDefault: newAddress.isDefault || false
+          })
+        });
+      } else {
+        // Add new address
+        response = await fetch('http://localhost:5000/api/address/add', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            addressLine1: newAddress.addressLine1,
+            addressLine2: newAddress.addressLine2 || '',
+            city: newAddress.city,
+            state: newAddress.state,
+            country: newAddress.country,
+            isDefault: newAddress.isDefault || false
+          })
+        });
+      }
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save address');
+      }
+  
+      // Refresh addresses to ensure we have the latest data from the server
+      const addressesResponse = await fetch('http://localhost:5000/api/address/get', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!addressesResponse.ok) {
+        throw new Error('Failed to fetch updated addresses');
+      }
+  
+      const updatedAddresses = await addressesResponse.json();
+      setAddresses(updatedAddresses);
+  
+      setAddingNewAddress(false);
       setEditingAddress(null);
-    } else {
-      // Add new address
-      setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
+    } catch (err) {
+      setError(err.message || 'Failed to save address');
+      console.error(err);
     }
-    setAddingNewAddress(false);
+  };
+  
+  const handleDeleteAddress = async (addressToDelete) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:5000/api/address/delete/${addressToDelete._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete address');
+      }
+  
+      // Refresh addresses to ensure we have the latest data from the server
+      const addressesResponse = await fetch('http://localhost:5000/api/address/get', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!addressesResponse.ok) {
+        throw new Error('Failed to fetch updated addresses');
+      }
+  
+      const updatedAddresses = await addressesResponse.json();
+      setAddresses(updatedAddresses);
+    } catch (err) {
+      setError(err.message || 'Failed to delete address');
+      console.error(err);
+    }
   };
 
   // Handle payment method save
-  const handleSavePaymentMethod = (newPaymentMethod) => {
-    if (editingPaymentMethod) {
-      // Update existing payment method
-      setPaymentMethods((prevPaymentMethods) => 
-        prevPaymentMethods.map((method) => 
-          method.id === editingPaymentMethod.id 
-            ? { ...method, ...newPaymentMethod } 
-            : method
-        )
-      );
+  const handleSavePaymentMethod = async (newPaymentMethod) => {
+    const token = localStorage.getItem('token');
+    try {
+      let response;
+      if (editingPaymentMethod) {
+        // Update existing payment method
+        response = await fetch(`http://localhost:5000/api/payment/update/${editingPaymentMethod._id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cardType: newPaymentMethod.cardType,
+            cardNumber: newPaymentMethod.cardNumber,
+            expiryDate: newPaymentMethod.expiryDate,
+            cardHolderName: newPaymentMethod.cardHolderName,
+            isDefault: newPaymentMethod.isDefault || false
+          })
+        });
+      } else {
+        // Add new payment method
+        response = await fetch('http://localhost:5000/api/payment/add', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cardType: newPaymentMethod.cardType,
+            cardNumber: newPaymentMethod.cardNumber,
+            expiryDate: newPaymentMethod.expiryDate,
+            cardHolderName: newPaymentMethod.cardHolderName,
+            isDefault: newPaymentMethod.isDefault || false
+          })
+        });
+      }
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save payment method');
+      }
+  
+      // Refresh payment methods to ensure we have the latest data from the server
+      const paymentMethodsResponse = await fetch('http://localhost:5000/api/payment/get', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!paymentMethodsResponse.ok) {
+        throw new Error('Failed to fetch updated payment methods');
+      }
+  
+      const updatedPaymentMethods = await paymentMethodsResponse.json();
+      setPaymentMethods(updatedPaymentMethods);
+  
+      setAddingNewPaymentMethod(false);
       setEditingPaymentMethod(null);
-    } else {
-      // Add new payment method
-      setPaymentMethods((prevPaymentMethods) => [
-        ...prevPaymentMethods,
-        newPaymentMethod
-      ]);
+    } catch (err) {
+      setError(err.message || 'Failed to save payment method');
+      console.error(err);
     }
-    setAddingNewPaymentMethod(false);
   };
-
-  // Handle address delete
-  const handleDeleteAddress = (addressToDelete) => {
-    setAddresses((prevAddresses) =>
-      prevAddresses.filter((address) => address !== addressToDelete)
-    );
-  };
-
+  
   // Handle payment method delete
-  const handleDeletePaymentMethod = (paymentMethodToDelete) => {
-    setPaymentMethods((prevPaymentMethods) =>
-      prevPaymentMethods.filter((method) => method !== paymentMethodToDelete)
-    );
+  const handleDeletePaymentMethod = async (paymentMethodToDelete) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:5000/api/payment/delete/${paymentMethodToDelete._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete payment method');
+      }
+  
+      // Refresh payment methods to ensure we have the latest data from the server
+      const paymentMethodsResponse = await fetch('http://localhost:5000/api/payment/get', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!paymentMethodsResponse.ok) {
+        throw new Error('Failed to fetch updated payment methods');
+      }
+  
+      const updatedPaymentMethods = await paymentMethodsResponse.json();
+      setPaymentMethods(updatedPaymentMethods);
+    } catch (err) {
+      setError(err.message || 'Failed to delete payment method');
+      console.error(err);
+    }
   };
 
+  // Handle save preferences
   const handleSavePreferences = async (updatedPreferences) => {
     const token = localStorage.getItem('token');
     try {
@@ -236,6 +410,7 @@ const AccountManagement = () => {
     }
   };
 
+  // Loading state
   if (loading) return (
     <div className='loading-overlay'>
       <div className='loading-text'>
@@ -244,7 +419,8 @@ const AccountManagement = () => {
     </div>
   );
   
-  if (error) return <div>{error}</div>;
+  // Error state
+  if (error) return <div className="text-red-500 p-4">{error}</div>;
 
   return (
     <div className="account-management">
@@ -291,10 +467,18 @@ const AccountManagement = () => {
                 Address Management
               </h2>
               <ul>
-                {addresses.map((address, index) => (
-                  <li key={index} className="flex items-center justify-between">
+                {addresses.map((address) => (
+                  <li 
+                    key={address._id} 
+                    className="flex items-center justify-between mb-2 p-2 border rounded"
+                  >
                     <span>
-                      {address.addressLine1}, {address.city}, {address.state}, {address.country}
+                      {address.addressLine1}
+                      {address.addressLine2 && `, ${address.addressLine2}`}
+                      , {address.city}, {address.state}, {address.country}
+                      {address.isDefault && (
+                        <span className="ml-2 text-green-500">(Default)</span>
+                      )}
                     </span>
                     <div className="flex space-x-2">
                       <Button 
@@ -349,10 +533,16 @@ const AccountManagement = () => {
                 Payment Methods
               </h2>
               <ul>
-                {paymentMethods.map((method, index) => (
-                  <li key={index} className="flex items-center justify-between">
+                {paymentMethods.map((method) => (
+                  <li 
+                    key={method._id} 
+                    className="flex items-center justify-between mb-2 p-2 border rounded"
+                  >
                     <span>
-                      {method.cardNumber} - {method.cardHolderName}
+                      {method.cardType} - **** **** **** {method.cardNumber.slice(-4)}
+                      {method.isDefault && (
+                        <span className="ml-2 text-green-500">(Default)</span>
+                      )}
                     </span>
                     <div className="flex space-x-2">
                       <Button 
