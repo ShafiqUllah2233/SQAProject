@@ -23,6 +23,7 @@ const Orderhistory = () => {
       <div className="dashboard-body">
         <Sidebar />
         <div className="dashboard-content">
+          <div className='blurredimage'></div>
           <h1>Order History</h1>
           <div className='orderlist'>
             

@@ -45,27 +45,17 @@ const submitFeedback = async (req, res) => {
 
 // Get feedback for an order
 const getFeedback = async (req, res) => {
-  const { orderId } = req.params;
-  const userId = req.id; // The user ID is assumed to be attached to the request, probably from authentication middleware
-
   try {
-    // Fetch the feedback for the specific order and populate the 'customer' field with name and email
-    const feedback = await Feedback.findOne({ order: orderId })
-      .populate('customer', 'name email');
-
-    if (!feedback) {
-      return res.status(404).json({ message: 'Feedback not found for this order' });
-    }
-
-    // Check if the customer who submitted the feedback is the same as the requesting user
-    if (feedback.customer._id.toString() !== userId) {
-      return res.status(403).json({ message: 'You are not authorized to access this feedback' });
-    }
-
-    res.status(200).json({ feedback });
+    const { orderId } = req.params;
+    const customerId = req.id;
+    const order=orderId;
+    const customer=customerId; // Assuming you're using middleware to attach userid
+    // Check if a feedback exists for this order and customer
+    const feedbackExists = await Feedback.find({ order,customer });
+    res.status(200).json({ exists: !!feedbackExists });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching feedback' });
+    console.error('Error checking feedback:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 

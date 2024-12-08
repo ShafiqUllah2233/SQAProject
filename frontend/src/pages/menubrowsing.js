@@ -21,17 +21,19 @@ const MenuBrowsing = () => {
       navigate('/'); 
       return;
     }
-
+  
     const fetchMenuData = async () => {
       try {
-        let url = 'http://localhost:5000/api/menu/';
-        
+        let url = 'http://localhost:5000/api/menu';
+  
         // Append filter parameters to the URL if they exist
         const queryParams = new URLSearchParams(filterParams).toString();
         if (queryParams) {
-          url += `filter/?${queryParams}`;
+          url += `/filter/?${queryParams}`;
+        } else {
+          url += '/'; // If no filters are set, request all items
         }
-
+  
         const response = await fetch(url, {
           method: 'GET',
           headers: {
@@ -39,23 +41,37 @@ const MenuBrowsing = () => {
             'Content-Type': 'application/json',
           },
         });
-
+  
         if (!response.ok) {
           throw new Error('Failed to fetch menu data');
         }
-
+  
         const data = await response.json();
-        setMenuItems(data);
+        console.log(data);
+  
+        // Check if data is an array or an object with an 'items' property
+        if (Array.isArray(data)) {
+          // If it's an array, directly use it as the menu items
+          setMenuItems(data);
+        } else if (data.items && Array.isArray(data.items)) {
+          // If it's an object with an 'items' array, use that array
+          setMenuItems(data.items);
+        } else {
+          // Handle unexpected data structure
+          setMenuItems([]);
+        }
+  
         setLoading(false);  // Set loading to false once the data is fetched
-        
+  
       } catch (err) {
         console.log(err);
         setLoading(false);  // In case of an error, stop the loading state
       }
     };
-
+  
     fetchMenuData();
   }, [navigate, filterParams]);  // Re-fetch data when filterParams change
+  
 
   const handleOrder = async (itemId, quantity = 1) => {
     const token = localStorage.getItem('token');
@@ -106,6 +122,7 @@ const MenuBrowsing = () => {
         <Sidebar />
         <div className="dashboard-content">
           {/* Filter Dropdown */}
+          <div className='blurredimage'></div>
           <h1 style={{color:'white'}}>Browse Menu</h1>
           <FilterDropdown setFilterParams={setFilterParams} />
           

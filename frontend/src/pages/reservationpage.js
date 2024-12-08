@@ -17,6 +17,8 @@ const Reservations = () => {
       <div className="dashboard-body">
         <Sidebar />
         <div className="dashboard-content">
+        <div className='blurredimage'></div>
+
           <div className="account-sections">
             <h1>Available Tables</h1>
             <Reservation/>

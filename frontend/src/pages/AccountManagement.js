@@ -428,6 +428,7 @@ const AccountManagement = () => {
       <div className="dashboard-body">
         <Sidebar />
         <div className="dashboard-content">
+          <div className='blurredimage'></div>
           <h1>Account Management</h1>
           <div className="account-sections">
             {/* Account Preferences */}

@@ -30,55 +30,57 @@ const getMenuItemsByCategory = async (req, res) => {
 };
 
 const getFilteredMenuItems = async (req, res) => {
-  const { category, ingredients, Price } = req.query;
-
-  // Build filter object based on query params
-  let filter = {};
-
-  // Filter by category if provided
-  if (category) {
-    filter.category = category.toUpperCase();
-  }
-
-  // Filter by ingredients if provided
-  if (ingredients) {
-    const ingredientsArray = ingredients.split(',').map((ingredient) => ingredient.trim().toLowerCase());
-    filter.ingredients = { $in: ingredientsArray };  // Use $in to filter by any of the ingredients
-  }
-
-  // Filter by price if provided (only maxPrice)
-  let maxPrice = null;
-  if (Price) {
-    maxPrice = parseFloat(Price.trim());
-    if (isNaN(maxPrice)) {
-      return res.status(400).json({ message: 'Invalid price value' });
-    }
-    filter.price = { $lte: maxPrice };  // Only show items that are less than or equal to maxPrice
-  }
-
   try {
-    const menuItems = await MenuItem.find(filter);
+    const { 
+      category, 
+      price, 
+      ingredients, 
+      page = 1, 
+      limit = 10 
+    } = req.query;
 
-    // If no menu items match the filter, return a 404 response
-    if (menuItems.length === 0) {
-      return res.status(404).json({ message: 'No menu items found matching the filters' });
+    let query = {};
+
+    // Category filter
+    if (category) {
+      query.category = category;
     }
 
-    // Filter the menu items further to ensure price is less than or equal to maxPrice
-    if (maxPrice) {
-      const filteredMenuItems = menuItems.filter(item => item.price <= maxPrice);
-      // If no items match the price condition, return a 404 response
-      if (filteredMenuItems.length === 0) {
-        return res.status(404).json({ message: 'No menu items found within the specified price range' });
-      }
-      return res.json(filteredMenuItems); // Return the filtered menu items
+    // Price range filter
+    if (price) {
+      query.price = {};
+      if (price.$gte) query.price.$gte = parseFloat(price.$gte);
+      if (price.$lte) query.price.$lte = parseFloat(price.$lte);
     }
 
-    // Return the filtered menu items without price filtering
-    res.json(menuItems);
+    // Ingredients filter
+    if (ingredients) {
+      const ingredientList = Array.isArray(ingredients) 
+        ? ingredients 
+        : ingredients.split(',');
+      query.ingredients = { $all: ingredientList };
+    }
+
+    // Pagination
+    const options = {
+      skip: (page - 1) * limit,
+      limit: parseInt(limit)
+    };
+
+    // Fetch items
+    const items = await MenuItem.find(query, null, options);
+    const total = await MenuItem.countDocuments(query);
+
+    res.json({
+      items,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching filtered menu items' });
+    res.status(500).json({ 
+      message: 'Error filtering menu items', 
+      error: error.message 
+    });
   }
 };
 

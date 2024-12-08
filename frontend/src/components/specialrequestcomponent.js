@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Navigate } from "react-router-dom";
 
 const Requestitem = ({ data }) => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
@@ -9,6 +8,7 @@ const Requestitem = ({ data }) => {
     specialRequest: "",
   });
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [submittedOrders, setSubmittedOrders] = useState([]);
 
   const handleSpecialRequestClick = (orderId) => {
     setSelectedOrderId(orderId); // Show inputs for the selected order
@@ -23,7 +23,7 @@ const Requestitem = ({ data }) => {
     e.preventDefault(); // Prevent default form submission
     const token = localStorage.getItem("token");
     if (!token) {
-      Navigate("/");
+      return; // You can redirect to login if no token
     }
 
     try {
@@ -46,14 +46,14 @@ const Requestitem = ({ data }) => {
         throw new Error("Failed to submit the special request.");
       }
 
-      const result = await response.json();
-      console.log("Special Request Saved:", result);
-
       // Show the popup
       setIsPopupVisible(true);
 
       // Hide the popup after 3 seconds
       setTimeout(() => setIsPopupVisible(false), 3000);
+
+      // Update the submittedOrders state to prevent resubmission
+      setSubmittedOrders((prev) => [...prev, selectedOrderId]);
 
       // Reset the form and close input fields
       setRequestDetails({ name: "", date: "", specialRequest: "" });
@@ -64,9 +64,7 @@ const Requestitem = ({ data }) => {
   };
 
   return (
-    
     <div className="Feedbackitems">
-      
       {data.map((order) => (
         <div key={order._id} className="order-item">
           <h2>Order ID: {order._id}</h2>
@@ -76,14 +74,24 @@ const Requestitem = ({ data }) => {
             {order.totalPrice}
           </p>
           <ul style={{ paddingLeft: "20px", marginTop: "10px", color: "red" }}>
-            {order.items.map((item, index) => (
-              <li key={index} style={{ marginBottom: "5px" }}>
-                {item.menuItem.name} x {item.quantity} - ${" "}
-                {item.menuItem.price * item.quantity}
-              </li>
-            ))}
+            {order.items && order.items.length > 0 ? (
+              order.items.map((item, index) => (
+                <li key={index} style={{ marginBottom: "5px" }}>
+                  {item.menuItem
+                    ? `${item.menuItem.name} x ${item.quantity} - $${
+                        item.menuItem.price * item.quantity
+                      }`
+                    : "Item unavailable"}
+                </li>
+              ))
+            ) : (
+              <p>No items available for this order</p>
+            )}
           </ul>
-          {selectedOrderId === order._id ? (
+          {/* Render button or form depending on the submission status */}
+          {submittedOrders.includes(order._id) ? (
+            <p>Special request submitted!</p>
+          ) : selectedOrderId === order._id ? (
             <div className="special-request">
               <form
                 className="special-request-form"
@@ -95,21 +103,21 @@ const Requestitem = ({ data }) => {
                   placeholder="Your Name"
                   value={requestDetails.name}
                   onChange={handleInputChange}
-                  required // Ensures the field is filled
+                  required
                 />
                 <input
                   type="date"
                   name="date"
                   value={requestDetails.date}
                   onChange={handleInputChange}
-                  required // Ensures the date is selected
+                  required
                 />
                 <textarea
                   name="specialRequest"
                   placeholder="Enter Special Request"
                   value={requestDetails.specialRequest}
                   onChange={handleInputChange}
-                  required // Ensures the textarea is not empty
+                  required
                 ></textarea>
                 <div style={{ display: "flex", flexDirection: "row" }}>
                   <button type="submit">Submit Request</button>

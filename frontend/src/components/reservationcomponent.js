@@ -109,7 +109,7 @@ const Reservation = (props) => {
               padding: "15px",
               border: "1px solid #ccc",
               borderRadius: "8px",
-              backgroundColor: "#f9f9f9",
+              backgroundColor: "#ffffffb8",
             }}
           >
             <h1 style={{ fontSize: "22px", fontWeight: "bold", color: "#2980b9" }}>

@@ -9,7 +9,6 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [role, setRole] = useState('user');
   const [error, setError] = useState('');
 
   const handleSignup = async (e) => {
@@ -21,7 +20,7 @@ const Signup = () => {
       password,
       firstName,
       lastName,
-      role
+      role:'CUSTOMER'
     };
   console.log(userData);
   
@@ -35,7 +34,8 @@ const Signup = () => {
       });
   
       const data = await response.json(); // Parse the JSON response
-  
+      
+      console.log(data);
       if (response.ok) {
         localStorage.setItem('token', data.token); // Store JWT Token
         window.location.href = '/'; // Redirect to login page
@@ -96,18 +96,6 @@ const Signup = () => {
           required
         />
         
-        <div className="input-container">
-          <select
-            name="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required
-          >
-            <option value="STAFF">Staff</option>
-            <option value="ADMIN">Admin</option>
-            <option value="CUSTOMER">Customer</option>
-          </select>
-        </div>
 
         <Button type="submit" label="Sign Up" />
       </form>

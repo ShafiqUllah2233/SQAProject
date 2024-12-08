@@ -55,6 +55,8 @@ const Feedback = () => {
       <div className="dashboard-body">
         <Sidebar />
         <div className="dashboard-content">
+        <div className='blurredimage'></div>
+
           <h1>Feedback And Ratings</h1>
           {orders?<Feedbackitem orders={orders}/>:<p>No delivered orders</p>}
           

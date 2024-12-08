@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MoonLoader } from 'react-spinners';
+
 const OrderList = () => {
   const [orders, setOrders] = useState([]); // State to store orders
   const [loading, setLoading] = useState(true); // Loading state
@@ -79,7 +80,8 @@ const OrderList = () => {
       {loading && (
         <div className="loading-overlay">
           <div className="loading-text">
-            <div> <MoonLoader color="#36d7b7" loading={loading} size={100} />
+            <div> 
+              <MoonLoader color="#36d7b7" loading={loading} size={100} />
             </div>
           </div>
         </div>
@@ -107,7 +109,7 @@ const OrderList = () => {
             key={order._id}
             className="order-item"
             style={{
-              backgroundColor: '#f9f9f9',
+              backgroundColor: '#ffffffb8',
               border: '1px solid #ddd',
               padding: '15px',
               marginBottom: '20px',
@@ -116,7 +118,7 @@ const OrderList = () => {
               textDecoration: order.status === 'CANCELLED' ? 'line-through' : 'none', // Add line-through for cancelled orders
             }}
           >
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '10px',borderBottom:'0.1px solid gray' }}>Order #{order._id}</h2>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', borderBottom: '0.1px solid gray' }}>Order #{order._id}</h2>
             <p className="order-date" style={{ fontSize: '1rem', color: '#555', marginBottom: '5px' }}>
               Created At: {new Date(order.createdAt).toLocaleString()}
             </p>
@@ -137,8 +139,12 @@ const OrderList = () => {
 
             <ul style={{ paddingLeft: '20px', marginTop: '10px' }}>
               {order.items.map((item, index) => (
-                <li key={index} style={{ marginBottom: '5px',color:'red' }}>
-                  {item.menuItem.name} x {item.quantity} - ${item.menuItem.price * item.quantity}
+                <li key={index} style={{ marginBottom: '5px', color: 'red' }}>
+                  {item.menuItem ? (
+                    `${item.menuItem.name} x ${item.quantity} - $${item.menuItem.price * item.quantity}`
+                  ) : (
+                    'Item details unavailable'
+                  )}
                 </li>
               ))}
             </ul>

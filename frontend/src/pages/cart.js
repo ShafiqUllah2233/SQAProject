@@ -152,6 +152,8 @@ const Cart = () => {
       <div className="dashboard-body">
         <Sidebar />
         <div className="dashboard-content">
+        <div className='blurredimage'></div>
+
           <h1>Shopping Cart</h1>
 
           {loading && (
@@ -182,11 +184,11 @@ const Cart = () => {
                 />
               ))
             ) : (
-              <p>Your cart is empty.</p>
+              <p style={{color: '#e74c3c' ,fontSize: '20px'}}>Your cart is empty.</p>
             )}
           </div>
 
-          <h2 className="total-price">Total Price: ${totalPrice.toFixed(2)}</h2>
+          <h2 style={{color: 'red'}} className="total-price">Total Price: ${totalPrice.toFixed(2)}</h2>
           {cartItems.length > 0 && (
                 <div>
                   <button className="btncheckout" onClick={placeOrder}>

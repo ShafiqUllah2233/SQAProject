@@ -8,6 +8,6 @@ const {authMiddleware} = require('../middlewares/authMiddleware');
 router.post('/submit', authMiddleware, submitFeedback);
 
 // Route to get feedback for a specific order
-router.get('/:orderId', authMiddleware, getFeedback);
+router.get('/:orderId/check', authMiddleware, getFeedback);
 
 module.exports = router;
