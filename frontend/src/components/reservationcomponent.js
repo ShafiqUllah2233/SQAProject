@@ -159,7 +159,7 @@ const Reservation = (props) => {
                     onChange={(e) => setSpecialRequests(e.target.value)}
                   />
                 </div>
-                <button type="submit">Confirm Reservation</button>
+                <button className="forminputbutton" type="submit">Confirm Reservation</button>
               </form>
             )}
 

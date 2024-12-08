@@ -64,9 +64,9 @@ const Checkout = () => {
         ]);
 
         // Checking for response validity
-        if (!addressesRes.ok || !paymentMethodsRes.ok || !ordersRes.ok) {
-          throw new Error('Failed to fetch data');
-        }
+        if (!addressesRes.ok) throw new Error('No addresses found');
+        if (!paymentMethodsRes.ok) throw new Error('No payment methods found');
+        if (!ordersRes.ok) throw new Error('No orders found');
 
         // Updating state
         setAddresses(addressesData || []);
@@ -82,7 +82,7 @@ const Checkout = () => {
         setLoading(false);
       } catch (err) {
         console.error(err);
-        setError(err.message || 'Failed to fetch data');
+        setError(err.message || 'No Found');
         setLoading(false);
       }
     };
@@ -148,9 +148,7 @@ const Checkout = () => {
     );
   }
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
+  
 
   return (
     <div className="checkout">
@@ -160,7 +158,12 @@ const Checkout = () => {
         <div className="dashboard-content">
           <div className='blurredimage'></div>
           <h1>Checkout</h1>
-
+          
+          {error&&(
+            <div >
+              <h2 style={{color: 'red'}}>{error}</h2>
+            </div>
+          )}
           {/* Display success message if payment is successful */}
           {successMessage && (
             <div className="success-message">

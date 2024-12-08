@@ -184,7 +184,7 @@ const Cart = () => {
                 />
               ))
             ) : (
-              <p style={{color: '#e74c3c' ,fontSize: '20px'}}>Your cart is empty.</p>
+              <h2 style={{color: '#e74c3c' ,fontSize: '20px'}}>Your cart is empty.</h2>
             )}
           </div>
 

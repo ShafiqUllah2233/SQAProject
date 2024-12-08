@@ -145,7 +145,7 @@ const MenuBrowsing = () => {
                 />
               </div>
             )) : (
-              <p>No menu items found based on the selected filters.</p>
+              <p style={{color:'white'}}>No menu items found based on the selected filters.</p>
             )}
           </div>
         </div>

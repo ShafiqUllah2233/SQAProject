@@ -4,14 +4,12 @@ import { MoonLoader } from 'react-spinners';
 const OrderList = () => {
   const [orders, setOrders] = useState([]); // State to store orders
   const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
   const [successMessage, setSuccessMessage] = useState(null); // Success message state
 
   useEffect(() => {
     const fetchOrderHistory = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
-        setError('Please log in first.');
         setLoading(false);
         return;
       }
@@ -26,13 +24,15 @@ const OrderList = () => {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch order history');
+          // If the response is not OK, keep the orders empty
+          console.error('Failed to fetch order history');
+          return;
         }
 
         const data = await response.json();
         setOrders(data); // Set the fetched orders in state
       } catch (err) {
-        setError(err.message); // Handle any errors
+        console.error('Error fetching orders:', err.message);
       } finally {
         setLoading(false); // Stop loading after fetching
       }
@@ -44,10 +44,7 @@ const OrderList = () => {
   // Function to handle order cancellation
   const handleCancelOrder = async (orderId) => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      setError('Please log in first.');
-      return;
-    }
+    if (!token) return;
 
     try {
       const response = await fetch(`http://localhost:5000/api/order/cancel/${orderId}`, {
@@ -67,11 +64,10 @@ const OrderList = () => {
           order._id === orderId ? { ...order, status: 'CANCELLED' } : order
         )
       ); // Update the state with the cancelled order
-      setSuccessMessage('Order has been successfully cancelled!'); // Set success message
+      setSuccessMessage('Order has been successfully cancelled!');
       setTimeout(() => setSuccessMessage(null), 3000); // Remove success message after 3 seconds
     } catch (err) {
-      setError(err.message); // Handle error
-      setTimeout(() => setError(null), 3000); // Remove error message after 3 seconds
+      console.error('Error cancelling order:', err.message);
     }
   };
 
@@ -80,17 +76,9 @@ const OrderList = () => {
       {loading && (
         <div className="loading-overlay">
           <div className="loading-text">
-            <div> 
+            <div>
               <MoonLoader color="#36d7b7" loading={loading} size={100} />
             </div>
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="modal-overlay">
-          <div className="error-modal">
-            <p>{error}</p>
           </div>
         </div>
       )}
@@ -103,54 +91,64 @@ const OrderList = () => {
         </div>
       )}
 
-      {orders.length > 0 ? (
-        orders.map((order) => (
-          <div
-            key={order._id}
-            className="order-item"
+      {!loading && orders.length === 0 && (
+        <h2 style={{ color: 'red', textAlign: 'center' }}>No orders found.</h2>
+      )}
+
+      {orders.map((order) => (
+        <div
+          key={order._id}
+          className="order-item"
+          style={{
+            backgroundColor: '#ffffffb8',
+            border: '1px solid #ddd',
+            padding: '15px',
+            marginBottom: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            textDecoration: order.status === 'CANCELLED' ? 'line-through' : 'none',
+          }}
+        >
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', borderBottom: '0.1px solid gray' }}>
+            Order #{order._id}
+          </h2>
+          <p className="order-date" style={{ fontSize: '1rem', color: '#555', marginBottom: '5px' }}>
+            Created At: {new Date(order.createdAt).toLocaleString()}
+          </p>
+          <p
+            className={`order-status ${order.status.toLowerCase()}`}
             style={{
-              backgroundColor: '#ffffffb8',
-              border: '1px solid #ddd',
-              padding: '15px',
-              marginBottom: '20px',
-              borderRadius: '8px',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              textDecoration: order.status === 'CANCELLED' ? 'line-through' : 'none', // Add line-through for cancelled orders
+              fontWeight: 'bold',
+              fontSize: '1.2rem',
+              marginTop: '10px',
+              color: getStatusColor(order.status),
             }}
           >
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '10px', borderBottom: '0.1px solid gray' }}>Order #{order._id}</h2>
-            <p className="order-date" style={{ fontSize: '1rem', color: '#555', marginBottom: '5px' }}>
-              Created At: {new Date(order.createdAt).toLocaleString()}
-            </p>
-            <p
-              className={`order-status ${order.status.toLowerCase()}`}
-              style={{
-                fontWeight: 'bold',
-                fontSize: '1.2rem',
-                marginTop: '10px',
-                color: getStatusColor(order.status),
-              }}
-            >
-              Status: {order.status}
-            </p>
-            <p className="order-price" style={{ fontSize: '1.2rem', marginTop: '10px', fontWeight: 'bold', color: 'blue' }}>
-              Total Price: ${order.totalPrice}
-            </p>
+            Status: {order.status}
+          </p>
+          <p style={{ fontSize: '1.2rem', marginTop: '10px', fontWeight: 'bold', color: 'green' }}>
+            Payment Status: {order.paymentStatus}
+          </p>
+          <p
+            className="order-price"
+            style={{ fontSize: '1.2rem', marginTop: '10px', fontWeight: 'bold', color: 'blue' }}
+          >
+            Total Price: ${order.totalPrice}
+          </p>
 
-            <ul style={{ paddingLeft: '20px', marginTop: '10px' }}>
-              {order.items.map((item, index) => (
-                <li key={index} style={{ marginBottom: '5px', color: 'red' }}>
-                  {item.menuItem ? (
-                    `${item.menuItem.name} x ${item.quantity} - $${item.menuItem.price * item.quantity}`
-                  ) : (
-                    'Item details unavailable'
-                  )}
-                </li>
-              ))}
-            </ul>
+          <ul style={{ paddingLeft: '20px', marginTop: '10px' }}>
+            {order.items.map((item, index) => (
+              <li key={index} style={{ marginBottom: '5px', color: 'red' }}>
+                {item.menuItem
+                  ? `${item.menuItem.name} x ${item.quantity} - $${item.menuItem.price * item.quantity}`
+                  : 'Item details unavailable'}
+              </li>
+            ))}
+          </ul>
 
-            {/* Cancel button only if the order is not delivered or already cancelled */}
-            {order.status !== 'DELIVERED' && order.status !== 'CANCELLED' && (
+          {order.status !== 'DELIVERED' &&
+            order.status !== 'CANCELLED' &&
+            order.paymentStatus !== 'PAID' && (
               <button
                 onClick={() => handleCancelOrder(order._id)}
                 style={{
@@ -166,11 +164,8 @@ const OrderList = () => {
                 Cancel Order
               </button>
             )}
-          </div>
-        ))
-      ) : (
-        <p style={{ color: '#555' }}>No orders found.</p>
-      )}
+        </div>
+      ))}
     </div>
   );
 };

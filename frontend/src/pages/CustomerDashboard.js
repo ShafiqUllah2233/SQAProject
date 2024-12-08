@@ -65,8 +65,8 @@ const CustomerDashboard = () => {
           <div className='blurredimage'></div>
           <div className="welcome-section">
             <h1>Welcome To FoodEaters</h1>
-            <p style={{ color: 'white', fontSize: '1.2rem'}}><strong>Customer Name:</strong> {customerInfo.firstName} {customerInfo.lastName}</p>
-            <p style={{ color: 'white', fontSize: '1.2rem'}}><strong>Email:</strong> {customerInfo.email}</p>
+            <h2 style={{ color: 'white', fontSize: '1.2rem'}}><strong>Customer Name:</strong> {customerInfo.firstName} {customerInfo.lastName}</h2>
+            <h2 style={{ color: 'white', fontSize: '1.2rem'}}><strong>Email:</strong> {customerInfo.email}</h2>
           </div>
 
           {/* Restaurant History Section */}

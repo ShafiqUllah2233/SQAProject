@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { MoonLoader } from 'react-spinners';
+import { FaCreditCard, FaMoneyBillWave, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';  // Importing icons
 import '../index.css';  // Make sure to add your custom styles
 
 const Invoice = () => {
@@ -67,28 +68,53 @@ const Invoice = () => {
                 payment.map((invoice) => (
                   <div key={invoice._id} className="order-item">
                     <div className='invoice-item'>
-                    <h3 style={{ fontWeight: 'bold', color: '#2980b9',fontSize: '2rem'}}>Order ID: {invoice.orderId}</h3>
-                    <p style={{ fontWeight: 'bold', color: 'red'}}><strong>Amount:</strong> ${invoice.amount}</p>
-                    <p style={{ fontWeight: 'bold', color: 'green'}}><strong>Payment Method:</strong> {invoice.paymentMethod.cardType}</p>
-                    <p style={{ fontWeight: 'bold', color: 'blue'}}><strong>Status:</strong> {invoice.status}</p>
-                    <p style={{ fontWeight: 'bold', color: '#36D7B7'}}><strong>Date:</strong> {new Date(invoice.createdAt).toLocaleDateString()}</p>
-
+                      <h2 style={{ fontWeight: 'bold', color: '#2980b9', fontSize: '2rem' }}>
+                        Order ID: {invoice.orderId}
+                      </h2>
+                      <p style={{ fontWeight: 'bold', color: 'red' }}>
+                        <strong>Amount:</strong> ${invoice.amount}
+                        <FaMoneyBillWave style={{ marginLeft: '10px', color: '#f39c12' }} /> {/* Money icon */}
+                      </p>
+                      <p style={{ fontWeight: 'bold', color: 'green' }}>
+                        <strong>Payment Method:</strong> {invoice.paymentMethod.cardType}
+                        <FaCreditCard style={{ marginLeft: '10px' }} /> {/* Card icon */}
+                      </p>
+                      <p style={{ fontWeight: 'bold', color: 'blue' }}>
+                        <strong>Status:</strong> {invoice.status}
+                        {invoice.status === 'SUCCESS' ? (
+                          <FaCheckCircle style={{ marginLeft: '10px', color: 'green' }} />  // Completed icon
+                        ) : (
+                          <FaTimesCircle style={{ marginLeft: '10px', color: 'red' }} />  // Failed icon
+                        )}
+                      </p>
+                      <p style={{ fontWeight: 'bold', color: '#36D7B7' }}>
+                        <strong>Date:</strong> {new Date(invoice.createdAt).toLocaleDateString()}
+                      </p>
                     </div>
                     
                     {/* Check if paymentMethod exists and has details */}
                     {invoice.paymentMethod && typeof invoice.paymentMethod === 'object' && (
                       <div className='invoice-item'>
-                        <h4>Card Details:</h4>
-                        <p><strong>Card Type:</strong> {invoice.paymentMethod.cardType || 'N/A'}</p>
-                        <p><strong>Card Number:</strong> {invoice.paymentMethod.cardNumber || 'N/A'}</p>
-                        <p><strong>Expiry Date:</strong> {invoice.paymentMethod.expiryDate || 'N/A'}</p>
-                        <p><strong>Card Holder:</strong> {invoice.paymentMethod.cardHolderName || 'N/A'}</p>
+                        <h2>Card Details:</h2>
+                        <p style={{ fontWeight: 'bold', color: '#2980b9' }}>
+                          <strong>Card Type:</strong> {invoice.paymentMethod.cardType || 'N/A'}
+                          <FaCreditCard style={{ marginLeft: '10px' }} />
+                        </p>
+                        <p style={{ fontWeight: 'bold', color: '#e74c3c' }}>
+                          <strong>Card Number:</strong> {invoice.paymentMethod.cardNumber || 'N/A'}
+                        </p>
+                        <p style={{ fontWeight: 'bold', color: '#f39c12' }}>
+                          <strong>Expiry Date:</strong> {invoice.paymentMethod.expiryDate || 'N/A'}
+                        </p>
+                        <p style={{ fontWeight: 'bold', color: '#2ecc71' }}>
+                          <strong>Card Holder:</strong> {invoice.paymentMethod.cardHolderName || 'N/A'}
+                        </p>
                       </div>
                     )}
                   </div>
                 ))
               ) : (
-                <p>No invoices found.</p>
+                <h2 style={{color: 'red'}}>No invoices found.</h2>
               )}
             </div>
           )}

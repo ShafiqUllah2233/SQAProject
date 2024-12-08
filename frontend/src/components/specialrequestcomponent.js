@@ -67,16 +67,20 @@ const Requestitem = ({ data }) => {
     <div className="Feedbackitems">
       {data.map((order) => (
         <div key={order._id} className="order-item">
-          <h2>Order ID: {order._id}</h2>
-          <p style={{ color: "#4CAF50" }}>Status: {order.status}</p>
-          <p style={{ color: "#2196F3" }}>
-            <strong>Total Price: $</strong>
+          <h2 style={{ color: "#2196F3" }}>Order ID: {order._id}</h2>
+          <p style={{  fontWeight: 'bold',
+              fontSize: '1.2rem',
+              marginTop: '10px',color: "green" }}>Status: {order.status}</p>
+          <p style={{ color: "red", fontWeight: 'bold',
+              fontSize: '1.2rem',
+              marginTop: '10px' }}>
+            <strong style={{}}>Total Price: $</strong>
             {order.totalPrice}
           </p>
           <ul style={{ paddingLeft: "20px", marginTop: "10px", color: "red" }}>
             {order.items && order.items.length > 0 ? (
               order.items.map((item, index) => (
-                <li key={index} style={{ marginBottom: "5px" }}>
+                <li  key={index} style={{ marginBottom: "5px",color:'purple' }}>
                   {item.menuItem
                     ? `${item.menuItem.name} x ${item.quantity} - $${
                         item.menuItem.price * item.quantity
@@ -120,8 +124,8 @@ const Requestitem = ({ data }) => {
                   required
                 ></textarea>
                 <div style={{ display: "flex", flexDirection: "row" }}>
-                  <button type="submit">Submit Request</button>
-                  <button
+                  <button className="specialreqbutton" type="submit">Submit Request</button>
+                  <button className="specialreqbutton"
                     type="button"
                     onClick={() => setSelectedOrderId(null)}
                   >
@@ -131,7 +135,7 @@ const Requestitem = ({ data }) => {
               </form>
             </div>
           ) : (
-            <button onClick={() => handleSpecialRequestClick(order._id)}>
+            <button className="specialreqbutton" onClick={() => handleSpecialRequestClick(order._id)}>
               Send Special Request
             </button>
           )}

@@ -40,6 +40,7 @@ const Feedbackitem = ({ orders }) => {
           const result = await response.json();
           status[order._id] = result.exists; // Update the feedback status
         }
+        
         setFeedbackStatus(!status); // Set the feedback status for all orders
       } catch (error) {
         console.error('Error checking feedback status:', error.message);
@@ -143,7 +144,7 @@ const Feedbackitem = ({ orders }) => {
 
       {!isLoading && orders.length === 0 && <p className='centered-message'>{message}</p>}
 
-      {orders.map((order) => (
+      {orders.length>0&&orders.map((order) => (
         <div key={order._id} className="order-item">
           <h2>Order ID: {order._id}</h2>
           <p style={{ color: '#4CAF50' }}>Status: {order.status}</p>
@@ -162,14 +163,14 @@ const Feedbackitem = ({ orders }) => {
           ) : selectedOrder === order._id ? (
             <div className="feedback-form">
               {formError && <div className="error" style={{ color: '#F44336' }}>{formError}</div>}
-              <textarea
+              <textarea className='rating-input'
                 name="comment"
                 placeholder="Leave your comment"
                 value={feedbackData.comment}
                 onChange={(e) => handleInputChange(e, 'comment')}
                 required
               ></textarea>
-              <input
+              <input className='rating-input'
                 type="number"
                 name="rating"
                 min="1"
@@ -186,7 +187,7 @@ const Feedbackitem = ({ orders }) => {
                     <li key={item.menuItem._id}>
                       <label>
                         {item.menuItem.name}:
-                        <input
+                        <input className='rating-input'
                           type="number"
                           name={item.menuItem._id}
                           min="1"

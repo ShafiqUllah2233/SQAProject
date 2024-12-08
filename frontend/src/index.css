@@ -136,7 +136,8 @@ h3 {
 
 /* Input Field Styles */
 .auth-container input[type="email"],
-.auth-container input[type="password"] {
+.auth-container input[type="password"],
+.auth-container input[type="text"] {
   padding: 10px;
   width:90%;
   border: 1px solid #dcdcdc;
@@ -339,6 +340,122 @@ body {
 }
 
 /* Sidebar Styles */
+@media (max-width: 768px) {
+  .sidebar.mobile {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Hide off-screen by default */
+    width: 250px;
+    height: 100vh;
+    background-color: rgba(61, 61, 61, 0.547);
+    z-index: 1000;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  }
+
+  .sidebar.mobile.open {
+    left: 0; /* Slide in when open */
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+
+  .hamburger-menu {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    cursor: pointer;
+    font-size: 30px;
+    color: white;
+  }
+
+    .forminputtable input
+    {
+      width:auto !important;
+    }
+  .dashboard-body {
+    padding-left: 0 !important; /* Override any existing padding */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-content
+  {
+    padding:10px !important;
+  }
+
+  .header
+  {
+    justify-content: space-around !important;
+   
+  }
+
+  .header .logo
+  {
+    display: none;
+  }
+
+  .forminputbutton
+  {
+    width:auto !important;
+    font-size:10px !important;
+  }
+  .accountmgmtbutton,.btn,.specialreqbutton
+  {
+    width:auto !important;
+    font-size: 10px !important;
+  }
+  #preferences input,.accmgmtpayment input,.special-request-form input,.address-item,.payment-method
+  {
+    width:auto !important;
+
+  }
+
+  .Menugrid
+  {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+  .Menuitem
+  {
+    width: auto !important;
+  }
+  .filter-content
+  {
+    width:300px ! important;
+  }
+
+}
+
+.forminputbutton
+{
+  margin:5px 5px 10px 5px !important;
+}
+
+/* Ensure sidebar is visible on desktop */
+@media (min-width: 769px) {
+  .sidebar {
+    display: block !important;
+  }
+}
+
+
+
+#specialRequests
+{
+  border-radius: 8px;
+}
+
+
+
+
 .sidebar {
   background-color: #353535;
   color: #ecf0f1;
@@ -351,7 +468,11 @@ body {
   top: 3rem;
   overflow-y: auto;
   border-right: 2px solid rgb(184, 184, 184);
+  transition:all 0.3s ease
 }
+
+
+
 
 .sidebar ul {
   list-style: none;
@@ -372,7 +493,7 @@ body {
   border-radius: 4px;
   border-bottom: 1px solid rgb(138, 137, 137);
   transition: background-color 0.3s, color 0.3s;
-  animation: glowingText 3s ease-in-out infinite; /* Apply animation */
+  animation: glowingText 5s ease-in-out infinite; /* Apply animation */
 }
 
 .sidebar ul li a:hover {
@@ -1053,6 +1174,17 @@ h2 {
   padding:5px;
 }
 
+.rating-input
+{
+  width:40% ! important;
+  display: block;
+  margin-top: 10px;
+  height:30px;
+  border-radius: 10px;
+  border:none;
+}
+
+
 .popup {
   position: fixed;
   top: 50%;
@@ -1079,6 +1211,8 @@ h2 {
 }
 
 
+
+
 .tableflex form
 {
   display: flex;
@@ -1095,6 +1229,7 @@ h2 {
   width:300px;
   height:40px;
   border-radius: 10px;
+  padding-left: 5px;
   border:0.1px solid gray;
   cursor:pointer;
 }
@@ -1114,6 +1249,10 @@ h2 {
   border-radius: 5px;
 }
 
+.specialreqbutton
+{
+  margin:5px 5px 10px 5px !important;
+}
 
 
 .error-message {
@@ -1176,6 +1315,10 @@ h2 {
   background-color: #ffffffb8;
   width: calc(33.333% - 15px);
   box-sizing: border-box;
+}
+
+.payment-method,.address-item {
+  width: auto !important
 }
 
 .address-item:hover, .payment-method:hover {
