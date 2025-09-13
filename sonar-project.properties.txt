@@ -1,5 +1,0 @@
-sonar.projectKey=my_project
-sonar.sources=backend/src,frontend/src
-sonar.exclusions=**/node_modules/**,**/dist/**,**/build/**
-sonar.host.url=http://localhost:9000
-sonar.token=sqp_07059a647f3fa2564ef9df94f677c585da4fd2ed
