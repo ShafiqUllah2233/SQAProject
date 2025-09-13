@@ -85,6 +85,87 @@ const getFilteredMenuItems = async (req, res) => {
 };
 
 
+const createitem = async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      price,
+      category,
+      ingredients,
+      nutritionalInfo,
+      allergens,
+      availability,
+      imageUrl,
+      preparationTime,
+    } = req.body;
+
+    // Validate required fields
+    if (!name || !description || !price || !category) {
+      return res.status(400).json({ message: 'Name, description, price, and category are required' });
+    }
+
+    // Validate category against the schema enums
+    const allowedCategories = [
+      'APPETIZER',
+      'MAIN_COURSE',
+      'DESSERT',
+      'BEVERAGE',
+      'SIDES',
+      'SPECIALS',
+    ];
+    if (!allowedCategories.includes(category.toUpperCase())) {
+      return res.status(400).json({ message: `Invalid category. Allowed categories are: ${allowedCategories.join(', ')}` });
+    }
+
+    // Validate allergens against the schema enums
+    const allowedAllergens = ['GLUTEN', 'DAIRY', 'NUTS', 'SHELLFISH', 'SOY', 'EGGS'];
+    if (allergens) {
+      const invalidAllergens = allergens.filter((allergen) => !allowedAllergens.includes(allergen.toUpperCase()));
+      if (invalidAllergens.length > 0) {
+        return res.status(400).json({
+          message: `Invalid allergens detected: ${invalidAllergens.join(', ')}. Allowed allergens are: ${allowedAllergens.join(', ')}`,
+        });
+      }
+    }
+
+    // Validate nutritional info (optional, but ensure all properties are non-negative if provided)
+    if (nutritionalInfo) {
+      const { calories, protein, carbs, fat } = nutritionalInfo;
+      if (
+        (calories && calories < 0) ||
+        (protein && protein < 0) ||
+        (carbs && carbs < 0) ||
+        (fat && fat < 0)
+      ) {
+        return res.status(400).json({ message: 'Nutritional info values must be non-negative' });
+      }
+    }
+
+    // Create the new menu item
+    const newMenuItem = new MenuItem({
+      name,
+      description,
+      price,
+      category: category.toUpperCase(),
+      ingredients,
+      nutritionalInfo,
+      allergens: allergens?.map((allergen) => allergen.toUpperCase()),
+      availability: availability ?? true, // Default to true if not provided
+      imageUrl,
+      preparationTime,
+      createdBy: req.id, // Assuming middleware sets req.userid from authenticated user
+    });
+
+    // Save the new menu item to the database
+    const savedItem = await newMenuItem.save();
+    res.status(201).json({ message: 'Menu item created successfully', item: savedItem });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error creating menu item', error: error.message });
+  }
+};
+
 
 
 
@@ -121,5 +202,6 @@ module.exports = {
   getAllMenuItems,
   getMenuItemsByCategory,
   getFilteredMenuItems,
-  getMenuItemDetails
+  getMenuItemDetails,
+  createitem
 };
