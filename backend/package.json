@@ -11,7 +11,7 @@
     "nodemon": "^3.1.7"
   },
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node init && node app.js",
+    "dev": "node init && nodemon app.js"
   }
 }
