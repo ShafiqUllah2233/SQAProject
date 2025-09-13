@@ -4,7 +4,7 @@
     "gh-pages": "^6.2.0"
   },
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "node api.js && concurrently \"npm run server\" \"npm run client\"",
     "client": "cd frontend && npm start",
     "server": "cd backend && npm start"
   },
